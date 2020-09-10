@@ -2,10 +2,10 @@ package test;
 import java.io.*;
 public class LZWHelper
 {
-//	public static void main(String[] args) throws IOException
-//	{
-//		System.out.println(readFile("yolo.txt"));
-//	}
+	public static void main(String[] args) throws IOException
+	{
+		System.out.println(readFile("yolo.txt"));
+	}
 	public static String readFile(String fileName) throws IOException
 	{
 		StringBuffer finalOutput = new StringBuffer();
