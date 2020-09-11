@@ -9,7 +9,10 @@ public class Encode
 	//"97 98 99 257 259 258 260 263 262 265 261 267 264 99"
 	public static void main(String[] args) throws IOException
 	{
-		System.out.println(encode("yolo.txt"));
+		File encoded = new File("yolo.txt.lzw");
+        BufferedWriter writer = new BufferedWriter(new FileWriter(encoded));
+		writer.write(encode("yolo.txt"));
+		writer.close();
 	}
 	//takes in a filename, returns a string with the integers representing the codes delimited by spaces. does not return a bitstream.
 	public static String encode(String filename) throws IOException
@@ -71,6 +74,6 @@ public class Encode
 		{
 			table += joeHouse[i] + " ";
 		}
-		return table + "|" + output;
+		return (table + "|" + output);
 	}
 }
