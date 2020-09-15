@@ -15,6 +15,10 @@ public class LZWHelper
 		{
 			while((nextLine = reader.readLine()) != null)
 			{
+				if (nextLine.trim().length() == 0) {
+					finalOutput.append("\n");
+				}
+				
 				finalOutput.append(nextLine);
 			}
 		}

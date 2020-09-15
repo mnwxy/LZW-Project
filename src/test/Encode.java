@@ -64,16 +64,18 @@ public class Encode
 				current = file.substring(i,i+1);
 			}
 		}
+		
 		int length = dictionary.size();
 		String[] joeHouse = new String[length];
 		for(Map.Entry<String, Integer> Entry: dictionary.entrySet())
 		{
 			joeHouse[Entry.getValue()] = Entry.getKey();
 		}
-		for(int i=0; i<joeHouse.length; i++)
+		for(int i=256; i<joeHouse.length; i++)
 		{
 			table += joeHouse[i] + " ";
 		}
-		return (table + "|" + output);
+		table = table.substring(0, table.length() - 1);
+		return ("" + (length - 256) + " " + table + output);
 	}
 }
