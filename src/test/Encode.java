@@ -1,5 +1,5 @@
 package test;
-
+import java.io.*;
 import java.util.*;
 import java.io.*;
 
@@ -8,75 +8,79 @@ public class Encode
 	// Input Text to Encode and OutPut Encoded Text
 	public static void main(String[] args) throws IOException
 	{
-		File encodedFile = new File("lzw.text0.txt");
+		File encodedFile = new File("lzw-text0.txt");
         BufferedWriter writer = new BufferedWriter(new FileWriter(encodedFile));
-		writer.write(encode("lzw.text0.txt"));
+		writer.write(encode("yolo.txt"));
 		writer.close();
 	}
 	
 	//takes in a filename, returns a string with the integers representing the codes delimited by spaces. does not return a bitstream.
-	public static String encode(String filename) throws IOException
+	public static String encode(String fileName) throws IOException
 	{
-		String inputFile = LZWHelper.readFile(filename);
-		HashMap<String, Integer> dictionary = new HashMap<String, Integer>();
-		String previous = "";
-		String current = "" + inputFile.charAt ( 0 );
-		String combined = previous+current;
-		//this value is the size of our initial dictionary.
-		int value = 255;
-		String output = "";
-		String tableOutput = "";
-		//building our ASCII dictionary
-		for(int i = 0; i < 256; i++)
+		ArrayList <String> dictionary = new ArrayList <String> (); 
+		String p = "";
+		char c = 0;
+		String pc = "";
+		
+		FileReader fr = new FileReader (fileName);
+		BufferedReader br = new BufferedReader(fr);
+		PrintWriter pw = new PrintWriter ("encoded.txt");
+		
+		while (br.ready())
 		{
-			dictionary.put((char)(i)+"", i);
-		}
-		for(int i=1;i<inputFile.length()+1;i++)
-		{
-			combined = previous+current;
-			//if the length of the character is 1, then it should already be in our dictionary; no need to waste time checking.
-			if(combined.length()==1||dictionary.containsKey(combined))
+			c = (char)br.read();
+			pc = p+c;
+			//dictionary excludes characters 0-255 in the ascii table
+			//if pc is already in the dictionary or if it's in the ascii table
+			if (dictionary.indexOf(pc) >= 0 || pc.length() == 1)
 			{
-				
-				previous = previous + current;
-				//this patches the edge case when the code has reached the end of the string
-				if(i == inputFile.length())
-				{
-					output = output + " " + ((int)dictionary.get(previous));
-				}
-				
+				p = pc;
 			}
+			//print out value for previous character
 			else
 			{
-				output = output+" "+((int)dictionary.get(previous));
-				value = value + 1;
-				dictionary.put(combined,value);
-				//this patches the edge case when the code has reached the end of the string
-				if(i == inputFile.length())
+
+				//if p is already in the ascii table
+				if (p.length()==1)
 				{
-					output = output + " " + (int)(inputFile.charAt(inputFile.length()-1));
+					pw.print((int)p.charAt(0) + " ");
 				}
-				previous = current;
+				//if only in dictionary
+				else 
+				{
+					pw.print(256+dictionary.indexOf(p) + " ");
+				}
+				if (dictionary.size()<=1000)
+				{
+					dictionary.add(pc);
+				}
+				p= "" + c;
 			}
-			//this conditional is necessary because i runs from 1 to file.length().
-			if(i < inputFile.length())
-			{
-				current = inputFile.substring(i,i+1);
-			}
+
 		}
-		//this concatenates the dictionary into a single string called "tableOutput"
-		int length = dictionary.size();
-		String[] table = new String[length];
-		for(Map.Entry<String, Integer> Entry: dictionary.entrySet())
+		//edge case
+		//if previous is just one character then convert it to an int
+		if (p.length() == 1 )
 		{
-			table[Entry.getValue()] = Entry.getKey();
+			pw.print((int)p.charAt(0)+ " ");
 		}
-		for(int i=256; i<table.length; i++)
+		//if previous is a longer String, then find it in the dictionary
+		else
 		{
-			tableOutput += table[i] + " ";
+			pw.print(256+dictionary.indexOf(p) + " ");
 		}
-		tableOutput = tableOutput.substring(0, tableOutput.length() - 1);
-		//this returns the contents of both tableOutput and the encoded output
-		return ("" + (length - 256) + " " + tableOutput + output);
+		// Include the dictionary at the end of the encoded file
+		// Print an x to represent the end of the code and the start of the dictionary
+		pw.print("x");
+		// print each the index of each dictionary entry, then the length of the entry so when reading it in, it is easy to know when to stop, then print the entry itself
+		// these are delimited by a ":" between the index and the length and a "-" between the length and the entry itself
+		for (int i = 0; i < dictionary.size(); i++) {
+			pw.print("" + (i + 256) + ":" + dictionary.get(i).length() + "-" + dictionary.get(i));
+		}
+		//close all writers and readers
+		pw.close();
+		br.close();
+		fr.close();
+		return pc;
 	}
 }
