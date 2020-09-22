@@ -7,7 +7,7 @@ public class Decode
 {		
 		public static void main(String[] args) throws IOException
 		{
-			System.out.println(decode("yolo.txt.lzw"));
+			System.out.println(decode("lzw-text0.txt"));
 		}
 		
 		/**

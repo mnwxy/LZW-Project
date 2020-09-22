@@ -5,21 +5,22 @@ import java.io.*;
 
 public class Encode
 {
-	//takes in "yolo.txt" and outputs the encoded "yolo.txt.lzw"
+	// Input Text to Encode and OutPut Encoded Text
 	public static void main(String[] args) throws IOException
 	{
-		File encodedFile = new File("yolo.txt.lzw");
+		File encodedFile = new File("lzw.text0.txt");
         BufferedWriter writer = new BufferedWriter(new FileWriter(encodedFile));
-		writer.write(encode("yolo.txt"));
+		writer.write(encode("lzw.text0.txt"));
 		writer.close();
 	}
+	
 	//takes in a filename, returns a string with the integers representing the codes delimited by spaces. does not return a bitstream.
 	public static String encode(String filename) throws IOException
 	{
 		String inputFile = LZWHelper.readFile(filename);
 		HashMap<String, Integer> dictionary = new HashMap<String, Integer>();
 		String previous = "";
-		String current = inputFile.substring(0,1);
+		String current = "" + inputFile.charAt ( 0 );
 		String combined = previous+current;
 		//this value is the size of our initial dictionary.
 		int value = 255;
