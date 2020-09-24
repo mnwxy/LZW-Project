@@ -8,7 +8,7 @@ public class Encode
 	//takes in "yolo.txt" and outputs the encoded "yolo.txt.lzw"
 	public static void main(String[] args) throws IOException
 	{
-		File encodedFile = new File("yolo.txt.lzw");
+		File encodedFile = new File("yolo_encoded.txt");
         BufferedWriter writer = new BufferedWriter(new FileWriter(encodedFile));
 		writer.write(encode("yolo.txt"));
 		writer.close();
@@ -17,6 +17,7 @@ public class Encode
 	public static String encode(String filename) throws IOException
 	{
 		String inputFile = LZWHelper.readFile(filename);
+		System.out.println("finished reading file");
 		HashMap<String, Integer> dictionary = new HashMap<String, Integer>();
 		String previous = "";
 		String current = inputFile.substring(0,1);
@@ -63,6 +64,7 @@ public class Encode
 				current = inputFile.substring(i,i+1);
 			}
 		}
+		System.out.println("Finished encoding");
 		//this concatenates the dictionary into a single string called "tableOutput"
 		int length = dictionary.size();
 		String[] table = new String[length];
@@ -72,10 +74,11 @@ public class Encode
 		}
 		for(int i=256; i<table.length; i++)
 		{
-			tableOutput += table[i] + " ";
+			tableOutput += (table[i].length() + ":" + table[i]);
+			//tableOutput += table[i] + " ";
 		}
-		tableOutput = tableOutput.substring(0, tableOutput.length() - 1);
+		tableOutput = tableOutput.substring(0, tableOutput.length());
 		//this returns the contents of both tableOutput and the encoded output
-		return ("" + (length - 256) + " " + tableOutput + output);
+		return (""+ tableOutput + "x" + output);
 	}
 }

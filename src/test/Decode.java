@@ -7,7 +7,7 @@ public class Decode
 {		
 		public static void main(String[] args) throws IOException
 		{
-			System.out.println(decode("yolo.txt.lzw"));
+			System.out.println(decode("yolo_encoded.txt"));
 		}
 		
 		/**
@@ -20,35 +20,102 @@ public class Decode
 		 */
 		public static String decode(String filename) throws IOException
 		{
-			String fileContents = LZWHelper.readFile(filename);
+			FileReader fr = new FileReader(filename);
+			BufferedReader br = new BufferedReader(fr);
 			HashMap<Integer, String> dictionary = new HashMap<Integer, String>();
 			String reconstructed = "";
+			for(int i = 0; i < 256; i++)
+			{
+				dictionary.put(i, (char)(i)+"");
+			}
+			
+			int a;
+			String thisCharacter = "";
+			String currentString = "";
+			boolean currentlyReading = false;
+			int countedLength = 0;
+			int stringLength = 0;
+			int index = 256;
+			boolean foundX = false;;
+			while ((a = br.read()) != -1) {
+				if (String.valueOf((char)a).equals("x")){
+					foundX = true;
+				}
+				if (foundX == false){
+					thisCharacter = String.valueOf((char)a);
+					if (currentlyReading){
+						currentString += thisCharacter;
+						countedLength ++;
+						if (countedLength == stringLength) {
+							dictionary.put(index, currentString);
+							index++;
+							currentString = "";
+							countedLength = 0;
+							currentlyReading = false;
+						}
+					}
+					else {
+						if (thisCharacter.equals(":")){
+							stringLength = Integer.parseInt(currentString);
+							currentlyReading = true;
+							currentString = "";	
+						}
+						else {
+							currentString += thisCharacter;
+						}
+					}
+				}
+				else {
+					if (String.valueOf((char)a).equals("x") == false) {
+						thisCharacter = String.valueOf((char)a);
+						if (thisCharacter.equals(" ") && currentString.length() > 0) {
+							//System.out.println(currentString);
+							reconstructed += dictionary.get(Integer.parseInt(currentString));
+							currentString = "";
+						}
+						else {
+							if (thisCharacter.equals(" ") == false) {
+								currentString += thisCharacter;
+							}
+							
+						}
+					}
+				}
+				
+				
+				
+			}
+			reconstructed += dictionary.get(Integer.parseInt(currentString));
+//			for (Integer key : dictionary.keySet()){
+//				System.out.println(key + ": " + dictionary.get(key));
+//			}
+			//String fileContents = LZWHelper.readFile(filename);
+			
+			
+			
 			
 			// Populate dictionary with mapping of ASCII value (as a 32-bit integer) 
 			// to its String representation.
 			// e.g.
 			// 0x0A -> "\n"
 			// 0x41 -> "A"
-			for(int i = 0; i < 256; i++)
-			{
-				dictionary.put(i, (char)(i)+"");
-			}						
+									
 			
 			// Tokenized message from contents of file.
-			String[] tokens = fileContents.split(" ");
+			//String[] tokens = fileContents.split(" ");
 			
 			// Number of extra entries in dictionary mapping.
-			int count = Integer.parseInt(tokens[0]);
+			//int count = Integer.parseInt(tokens[0]);
 			
-			for (int i = 1; i < 1 + count; ++i)
-			{
-				dictionary.put(i + 255, tokens[i]);
-			}
-			
-			for(int i = 1 + count; i < tokens.length; ++i)
-			{
-				reconstructed += dictionary.get(Integer.parseInt(tokens[i]));
-			}
+//			for (int i = 1; i < 1 + count; ++i)
+//			{
+//				dictionary.put(i + 255, tokens[i]);
+//			}
+//			
+//			for(int i = 1 + count; i < tokens.length; ++i)
+//			{
+//				reconstructed += dictionary.get(Integer.parseInt(tokens[i]));
+//			}
 			
 			return reconstructed;
 		}
