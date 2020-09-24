@@ -55,13 +55,13 @@ public class Decode
 			// Int for Current Length of String
 			int stringLength = 0;
 			
-			// Initial Int After Dictionary of 0 to 255
+			// Initial index After Dictionary of 0 to 255 has been added
 			int index = 256;
 			
-			// Boolean for whether or not the Letter X has been read in yet, which indicates the start of the dictionary
+			// Boolean for whether or not the Letter X has been read in yet, which indicates the start of the encoded text
 			boolean foundX = false;;
 			
-			// While There Is a Char in the Buffered Reader
+			// While The End of the file has not been reached
 			while ((a = br.read()) != -1)
 			{
 				// If the letter X has been found yet
@@ -71,9 +71,9 @@ public class Decode
 				}
 				if (foundX == false)
 				{
-					// ThisCharacter Becomes A
+					// ThisCharacter Becomes A (the current character)
 					thisCharacter = String.valueOf((char)a);
-					
+					//If the reader is currently reading a value, not a delimiter
 					if (currentlyReading)
 					{
 						// Add the Char Version of the Letter from the Buffered Reader to the current String that is being constructed
@@ -87,7 +87,7 @@ public class Decode
 						{
 							// Add to Dictionary
 							dictionary.put(index, currentString);
-							// Add One to Indez
+							// Add One to Index
 							index++;
 							// Reset currentString
 							currentString = "";
@@ -99,7 +99,7 @@ public class Decode
 					}
 					else
 					{
-						// If Statement for Delimiter ":", which represents the end of the index of the dictionary entry and the start of its length
+						// If Statement for Delimiter ":", which represents the end of the entry's length and the start of the dictionary entry itself
 						if (thisCharacter.equals(":")){
 							stringLength = Integer.parseInt(currentString);
 							currentlyReading = true;
