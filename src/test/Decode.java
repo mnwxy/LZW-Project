@@ -20,10 +20,19 @@ public class Decode
 		 */
 		public static String decode(String filename) throws IOException
 		{
+			// File Reader to Read Files
 			FileReader fr = new FileReader(filename);
+			
+			// Buffered Reader to Read Characters
 			BufferedReader br = new BufferedReader(fr);
+			
+			// Dictionary with Letters
 			HashMap<Integer, String> dictionary = new HashMap<Integer, String>();
+			
+			// String for Reconstructed Char
 			String reconstructed = "";
+			
+			// Dictionary for 
 			for(int i = 0; i < 256; i++)
 			{
 				dictionary.put(i, (char)(i)+"");
