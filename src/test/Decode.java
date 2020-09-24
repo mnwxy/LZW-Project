@@ -32,38 +32,74 @@ public class Decode
 			// String for Reconstructed Char
 			String reconstructed = "";
 			
-			// Dictionary for 
+			// Dictionary for First 256 Characters
 			for(int i = 0; i < 256; i++)
 			{
 				dictionary.put(i, (char)(i)+"");
 			}
 			
 			int a;
+			
+			// Current Character
 			String thisCharacter = "";
+			
+			// Current String
 			String currentString = "";
+			
+			// If Currently Reading
 			boolean currentlyReading = false;
+			
+			// Int for How Many We Chars We Have Counted
 			int countedLength = 0;
+			
+			// Int for Current Length of String
 			int stringLength = 0;
+			
+			// Initial Int After Dictionary of 0 to 255
 			int index = 256;
+			
+			// Boolean for whether or not the Letter X has been read in yet, which indicates the start of the dictionary
 			boolean foundX = false;;
-			while ((a = br.read()) != -1) {
-				if (String.valueOf((char)a).equals("x")){
+			
+			// While There Is a Char in the Buffered Reader
+			while ((a = br.read()) != -1)
+			{
+				// If the letter X has been found yet
+				if (String.valueOf((char)a).equals("x"))
+				{
 					foundX = true;
 				}
-				if (foundX == false){
+				if (foundX == false)
+				{
+					// ThisCharacter Becomes A
 					thisCharacter = String.valueOf((char)a);
-					if (currentlyReading){
+					
+					if (currentlyReading)
+					{
+						// Add the Char Version of the Letter from the Buffered Reader to the current String that is being constructed
 						currentString += thisCharacter;
+						
+						// counter for the length of the String constructed so far Increases by One
 						countedLength ++;
-						if (countedLength == stringLength) {
+						
+						//if the current String has hit the specified length of the dictionary entry
+						if (countedLength == stringLength)
+						{
+							// Add to Dictionary
 							dictionary.put(index, currentString);
+							// Add One to Indez
 							index++;
+							// Reset currentString
 							currentString = "";
+							// Reset CountedLength
 							countedLength = 0;
+							// Reset currentlyReading
 							currentlyReading = false;
 						}
 					}
-					else {
+					else
+					{
+						// If Statement for Delimiter ":", which represents the end of the index of the dictionary entry and the start of its length
 						if (thisCharacter.equals(":")){
 							stringLength = Integer.parseInt(currentString);
 							currentlyReading = true;
@@ -74,12 +110,23 @@ public class Decode
 						}
 					}
 				}
-				else {
-					if (String.valueOf((char)a).equals("x") == false) {
+				else
+				{
+					// If a != x
+					if (String.valueOf((char)a).equals("x") == false)
+					{
+						// thisCharacter Becomes a
 						thisCharacter = String.valueOf((char)a);
-						if (thisCharacter.equals(" ") && currentString.length() > 0) {
+						
+						// If thisCharacter == Space
+						if (thisCharacter.equals(" ") && currentString.length() > 0)
+						{
 							//System.out.println(currentString);
+							
+							// add the decoded combination to the decoded message
 							reconstructed += dictionary.get(Integer.parseInt(currentString));
+							
+							//reset the currentString after each individual code has been decoded
 							currentString = "";
 						}
 						else {
@@ -90,7 +137,6 @@ public class Decode
 						}
 					}
 				}
-				
 				
 				
 			}
