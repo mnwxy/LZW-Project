@@ -1,5 +1,6 @@
-//package test;
+package test;
 
+//imports
 import java.util.*;
 import java.io.*;
 
@@ -7,6 +8,7 @@ public class Decode
 {		
 		public static void main(String[] args) throws IOException
 		{
+			//print out the decoded message
 			System.out.println(decode("lzw-text0_encoded.txt"));
 		}
 		
@@ -20,35 +22,52 @@ public class Decode
 		 */
 		public static String decode(String filename) throws IOException
 		{
+			//a String to hold the reconstructed message
 			String reconstructed = "";
 			try {
+				//a reader to read the file
 				FileReader fr = new FileReader(filename);
 				BufferedReader br = new BufferedReader(fr);
+				//a dictionary to store all of the codes and their values
 				HashMap<Integer, String> dictionary = new HashMap<Integer, String>();
+				//add all of the single characters and their ascii values to the dictionary
 				for(int i = 0; i < 256; i++)
 				{
 					dictionary.put(i, (char)(i)+"");
 				}
-				
+				//an int to hold the value of each character that is read in
 				int a;
+				//represents the current character being read in
 				String thisCharacter = "";
+				//represents the String that is currently being built
 				String currentString = "";
+				//tells the computer whether or not we are reading an actually valuable String or if we're on a delimiter
 				boolean currentlyReading = false;
+				//represents the counted length of the String being constructed so far
 				int countedLength = 0;
+				//represents the target length of the String being constructed
 				int stringLength = 0;
+				//represents the index of each dictionary entry
 				int index = 256;
-				boolean foundX = false;;
+				//tells the computer whether or not we have started reading actual codes, or if we are still reading dictionary entries, separated by an x
+				boolean foundX = false;
+				//start reading the file
 				while ((a = br.read()) != -1) {
+					//if we find the x, then we know to start reading in actual codes, so we restart the while loop to ignore the x
 					if (String.valueOf((char)a).equals("x")){
 						foundX = true;
-						System.out.println("finished reconstructing dictionary");
 						continue;
 					}
+					//if the x hasn't been found yet
 					if (foundX == false){
+						//set thisCharacter to the current character
 						thisCharacter = String.valueOf((char)a);
+						//if we are reading a significant part
 						if (currentlyReading){
+							//add thisCharacter to the currentString and increment the countedLength
 							currentString += thisCharacter;
 							countedLength ++;
+							//once we reach the target length, we put the entry into the dictionary, increment the index, and reset currentString, countedLength, and currentlyReading
 							if (countedLength == stringLength) {
 								dictionary.put(index, currentString);
 								index++;
@@ -57,23 +76,31 @@ public class Decode
 								currentlyReading = false;
 							}
 						}
+						//if we are not reading a significant part
 						else {
+							//if we're on a delimiter, then we record the target length of the next combination and reset currentString, and set currentlyReading to true
 							if (thisCharacter.equals(":")){
 								stringLength = Integer.parseInt(currentString);
 								currentlyReading = true;
 								currentString = "";	
 							}
+							//otherwise, just append thisCharacter to currentString
 							else {
 								currentString += thisCharacter;
 							}
 						}
 					}
+					//if the x has been found already
 					else {
+						//set thisCharacter to the character currently being read
 						thisCharacter = String.valueOf((char)a);
+						//if we hit the delimiter, then we can translate the current code
 						if (thisCharacter.equals(" ")) {
 							reconstructed += dictionary.get(Integer.parseInt(currentString));
+							//reset currentString
 							currentString = "";
 						}
+						//if we haven't found the delimiter yet, then keep reading until we do
 						else {
 							currentString += thisCharacter;
 						}
@@ -87,37 +114,7 @@ public class Decode
 			catch(Exception e){
 				System.out.println("The following error occured: " + e);
 			}
-			
-//			for (Integer key : dictionary.keySet()){
-//				System.out.println(key + ": " + dictionary.get(key));
-//			}
-			//String fileContents = LZWHelper.readFile(filename);
-			
-			
-			
-			
-			// Populate dictionary with mapping of ASCII value (as a 32-bit integer) 
-			// to its String representation.
-			// e.g.
-			// 0x0A -> "\n"
-			// 0x41 -> "A"
-									
-			
-			// Tokenized message from contents of file.
-			//String[] tokens = fileContents.split(" ");
-			
-			// Number of extra entries in dictionary mapping.
-			//int count = Integer.parseInt(tokens[0]);
-			
-//			for (int i = 1; i < 1 + count; ++i)
-//			{
-//				dictionary.put(i + 255, tokens[i]);
-//			}
-//			
-//			for(int i = 1 + count; i < tokens.length; ++i)
-//			{
-//				reconstructed += dictionary.get(Integer.parseInt(tokens[i]));
-//			}
+			//return the reconstructed String
 			return reconstructed;
 		}
 }
