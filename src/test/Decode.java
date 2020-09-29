@@ -1,4 +1,4 @@
-package test;
+//package test;
 
 import java.util.*;
 import java.io.*;
@@ -7,7 +7,7 @@ public class Decode
 {		
 		public static void main(String[] args) throws IOException
 		{
-			System.out.println(decode("yolo_encoded.txt"));
+			System.out.println(decode("lzw-text0_encoded.txt"));
 		}
 		
 		/**
@@ -20,72 +20,74 @@ public class Decode
 		 */
 		public static String decode(String filename) throws IOException
 		{
-			FileReader fr = new FileReader(filename);
-			BufferedReader br = new BufferedReader(fr);
-			HashMap<Integer, String> dictionary = new HashMap<Integer, String>();
 			String reconstructed = "";
-			for(int i = 0; i < 256; i++)
-			{
-				dictionary.put(i, (char)(i)+"");
-			}
-			
-			int a;
-			String thisCharacter = "";
-			String currentString = "";
-			boolean currentlyReading = false;
-			int countedLength = 0;
-			int stringLength = 0;
-			int index = 256;
-			boolean foundX = false;;
-			while ((a = br.read()) != -1) {
-				if (String.valueOf((char)a).equals("x")){
-					foundX = true;
+			try {
+				FileReader fr = new FileReader(filename);
+				BufferedReader br = new BufferedReader(fr);
+				HashMap<Integer, String> dictionary = new HashMap<Integer, String>();
+				for(int i = 0; i < 256; i++)
+				{
+					dictionary.put(i, (char)(i)+"");
 				}
-				if (foundX == false){
-					thisCharacter = String.valueOf((char)a);
-					if (currentlyReading){
-						currentString += thisCharacter;
-						countedLength ++;
-						if (countedLength == stringLength) {
-							dictionary.put(index, currentString);
-							index++;
-							currentString = "";
-							countedLength = 0;
-							currentlyReading = false;
+				
+				int a;
+				String thisCharacter = "";
+				String currentString = "";
+				boolean currentlyReading = false;
+				int countedLength = 0;
+				int stringLength = 0;
+				int index = 256;
+				boolean foundX = false;;
+				while ((a = br.read()) != -1) {
+					if (String.valueOf((char)a).equals("x")){
+						foundX = true;
+						System.out.println("finished reconstructing dictionary");
+						continue;
+					}
+					if (foundX == false){
+						thisCharacter = String.valueOf((char)a);
+						if (currentlyReading){
+							currentString += thisCharacter;
+							countedLength ++;
+							if (countedLength == stringLength) {
+								dictionary.put(index, currentString);
+								index++;
+								currentString = "";
+								countedLength = 0;
+								currentlyReading = false;
+							}
+						}
+						else {
+							if (thisCharacter.equals(":")){
+								stringLength = Integer.parseInt(currentString);
+								currentlyReading = true;
+								currentString = "";	
+							}
+							else {
+								currentString += thisCharacter;
+							}
 						}
 					}
 					else {
-						if (thisCharacter.equals(":")){
-							stringLength = Integer.parseInt(currentString);
-							currentlyReading = true;
-							currentString = "";	
-						}
-						else {
-							currentString += thisCharacter;
-						}
-					}
-				}
-				else {
-					if (String.valueOf((char)a).equals("x") == false) {
 						thisCharacter = String.valueOf((char)a);
-						if (thisCharacter.equals(" ") && currentString.length() > 0) {
-							//System.out.println(currentString);
+						if (thisCharacter.equals(" ")) {
 							reconstructed += dictionary.get(Integer.parseInt(currentString));
 							currentString = "";
 						}
 						else {
-							if (thisCharacter.equals(" ") == false) {
-								currentString += thisCharacter;
-							}
-							
+							currentString += thisCharacter;
 						}
+								
 					}
 				}
-				
-				
-				
+					
+					
+					
 			}
-			reconstructed += dictionary.get(Integer.parseInt(currentString));
+			catch(Exception e){
+				System.out.println("The following error occured: " + e);
+			}
+			
 //			for (Integer key : dictionary.keySet()){
 //				System.out.println(key + ": " + dictionary.get(key));
 //			}
@@ -116,7 +118,6 @@ public class Decode
 //			{
 //				reconstructed += dictionary.get(Integer.parseInt(tokens[i]));
 //			}
-			
 			return reconstructed;
 		}
 }
