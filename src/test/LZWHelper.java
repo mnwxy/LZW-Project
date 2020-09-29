@@ -1,4 +1,6 @@
-package test;
+/*
+
+//package test;
 import java.io.*;
 public class LZWHelper
 {
@@ -26,3 +28,4 @@ public class LZWHelper
 		return finalOutput.toString();
 	}
 }
+*/
