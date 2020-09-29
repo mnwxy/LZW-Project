@@ -1,10 +1,12 @@
+/*
+
 //package test;
 import java.io.*;
 public class LZWHelper
 {
 	public static void main(String[] args) throws IOException
 	{
-		System.out.println(readFile("yolo.txt"));
+		System.out.println(readFile("lzw-text0.txt"));
 	}
 	public static String readFile(String fileName) throws IOException
 	{
@@ -26,3 +28,4 @@ public class LZWHelper
 		return finalOutput.toString();
 	}
 }
+*/
