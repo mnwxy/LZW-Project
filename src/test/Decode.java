@@ -1,3 +1,8 @@
+/**
+* Praise be to Ms. Kaufman and Computer Science A teachers.
+* They spoke the truth when they spoke of handwritten code and BlueJ.
+*/
+
 package test;
 
 //imports
@@ -9,7 +14,7 @@ public class Decode
 		public static void main(String[] args) throws IOException
 		{
 			//print out the decoded message
-			System.out.println(decode("lzw-text0_encoded.txt"));
+			System.out.println(Decode("lzw-text0_encoded.txt"));
 		}
 		
 		/**
@@ -20,14 +25,14 @@ public class Decode
 		 * @return Decompressed message
 		 * @throws IOException
 		 */
-		public static String decode(String filename) throws IOException
+		public static String Decode(String filename) throws IOException
 		{
 			//a String to hold the reconstructed message
 			String reconstructed = "";
 			try {
 				//a reader to read the file
-				FileReader fr = new FileReader(filename);
-				BufferedReader br = new BufferedReader(fr);
+				FileReader fileReader = new FileReader(filename);
+				BufferedReader bufferedReader = new BufferedReader(fileReader);
 				//a dictionary to store all of the codes and their values
 				HashMap<Integer, String> dictionary = new HashMap<Integer, String>();
 				//add all of the single characters and their ascii values to the dictionary
@@ -36,7 +41,7 @@ public class Decode
 					dictionary.put(i, (char)(i)+"");
 				}
 				//an int to hold the value of each character that is read in
-				int a;
+				int charValue;
 				//represents the current character being read in
 				String thisCharacter = "";
 				//represents the String that is currently being built
@@ -52,16 +57,16 @@ public class Decode
 				//tells the computer whether or not we have started reading actual codes, or if we are still reading dictionary entries, separated by an x
 				boolean foundX = false;
 				//start reading the file
-				while ((a = br.read()) != -1) {
+				while ((charValue = bufferedReader.read()) != -1) {
 					//if we find the x, then we know to start reading in actual codes, so we restart the while loop to ignore the x
-					if (String.valueOf((char)a).equals("x")){
+					if (String.valueOf((char)charValue).equals("x")){
 						foundX = true;
 						continue;
 					}
 					//if the x hasn't been found yet
 					if (foundX == false){
 						//set thisCharacter to the current character
-						thisCharacter = String.valueOf((char)a);
+						thisCharacter = String.valueOf((char)charValue);
 						//if we are reading a significant part
 						if (currentlyReading){
 							//add thisCharacter to the currentString and increment the countedLength
@@ -93,7 +98,7 @@ public class Decode
 					//if the x has been found already
 					else {
 						//set thisCharacter to the character currently being read
-						thisCharacter = String.valueOf((char)a);
+						thisCharacter = String.valueOf((char)charValue);
 						//if we hit the delimiter, then we can translate the current code
 						if (thisCharacter.equals(" ")) {
 							reconstructed += dictionary.get(Integer.parseInt(currentString));
